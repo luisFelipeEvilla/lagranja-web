@@ -1,10 +1,11 @@
 import { appRoutes } from "../utils/constants";
+import cookieCutter from 'cookie-cutter'
 
 const RouteGuard = ({ router, children }) => {
     const isBrowser = typeof window !== "undefined";
 
     if (isBrowser) {
-        const jwt = localStorage.getItem('token');
+        const jwt = cookieCutter.get('token');
         const unprotectedRoutes = [
             appRoutes.LOGIN_PAGE
         ]
