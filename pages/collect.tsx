@@ -1,12 +1,16 @@
 import Cookies from 'cookies';
 import jsCookie from 'js-cookie'; 
 import { useState } from 'react';
-import Modal from '../components/modal';
+import { Modal} from 'flowbite-react'
+import ModalComponent from '../components/Modal';
 
 export default function Collect(props) {
     const [activeSuppliers, setActiveSuppliers] = useState(props.suppliers.filter(supplier => supplier.isActive));
     const [suppliers, setSuppliers] = useState(activeSuppliers);
     const [totalMilk, setTotalMilk] = useState(0);
+    const [showModal, setShowModal] = useState(false);
+    const [modalMessages, setModalMessages] = useState("");
+
     const tableId = "collection-table";
     
     const handleSearch = (event) => {
@@ -61,7 +65,8 @@ export default function Collect(props) {
 
         
         const token = jsCookie.get('token');
-
+        setShowModal(true);
+        
         const response:Response = await fetch(`${API_BASE_URL}/collections`, {
             method: 'POST',
             headers: {
@@ -72,14 +77,18 @@ export default function Collect(props) {
         })
         
         if (response.status === 200) {
-            const modal = document.querySelector('#popup-modal')
-
-            modal.show();
+            setShowModal(true);
+            setModalMessages("Información almacenada correctamente");
+        } else {
+            const result = await response.json();
+            setShowModal(true);
+            setModalMessages(`Error almacenado información: \n ${result.message}`)
         }
+        
     }    
     return (
-        <div className="p-6">
-            <Modal message={"Información almacenada correctamente"}/>
+        <div className="p-6 dark">
+            <ModalComponent message={modalMessages} showModal={showModal} setShowModal={setShowModal}/>
             <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
                 <div className="p-4">
                     <label htmlFor="table-search" className="sr-only">Search</label>
