@@ -88,7 +88,10 @@ export default function Collect(props) {
     }    
     return (
         <div className="p-6 dark">
-            <ModalComponent message={modalMessages} showModal={showModal} setShowModal={setShowModal}/>
+            {
+                showModal ?  <ModalComponent message={modalMessages} showModal={showModal} setShowModal={setShowModal}/> : <p></p>
+            }
+           
             <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
                 <div className="p-4">
                     <label htmlFor="table-search" className="sr-only">Search</label>
