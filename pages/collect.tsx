@@ -1,7 +1,6 @@
 import Cookies from 'cookies';
 import jsCookie from 'js-cookie'; 
 import { useState } from 'react';
-import { Modal} from 'flowbite-react'
 import ModalComponent from '../components/Modal';
 
 export default function Collect(props) {
