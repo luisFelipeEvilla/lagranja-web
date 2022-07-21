@@ -7,28 +7,29 @@ import cookieCutter from 'cookie-cutter';
 
 import { getSuppliers } from '../lib/suppliers/getSuppliers';
 import { getInfoSuppliers } from '../lib/suppliers/infoSuppliers';
+import SpinnerComponent from '../components/Spinner';
 
 export default function Home(props) {
   const [suppliers, setSuppliers] = useState(props.suppliers);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [dateRange, setDateRange] = useState(new Date);
+  const [dateRange, setDateRange] = useState({ from: null, to: null });
 
   const headers = ["Nombre", "Leche ácida", "Leche entera"]
   const fields = ["name", "acidMilk", "milk",];
 
   useEffect(() => {
     setData(getInfoSuppliers(suppliers));
-    setLoading(false);
+    setLoading(false)
   }, [suppliers]);
 
   useEffect(() => {
     if (dateRange) {
-      const { from, to} = dateRange;
+      const { from, to } = dateRange;
 
       if (from && to) {
         const jwt = cookieCutter.get('token');
-  
+
         setLoading(true);
         getSuppliers(jwt, from, to).then(suppliers => {
           setSuppliers(suppliers)
@@ -49,25 +50,32 @@ export default function Home(props) {
           dateFilter={true}
           dateRange={dateRange}
           setDateRange={setDateRange}
+          detailsEndPoint={'/suppliers'}
         >
-        </TableComponent> : null
+        </TableComponent> : <SpinnerComponent/>
       }
     </div>
   )
 }
 
 export async function getServerSideProps({ req, res }) {
-
-
   const cookies = new Cookies(req, res);
-
   const token = cookies.get('token');
 
-  const suppliers = await getSuppliers(token);
+  if (token) {
+    const suppliers = await getSuppliers(token);
 
-  return {
-    props: {
-      suppliers
+    return {
+      props: {
+        suppliers
+      }
+    }
+  } else {
+    return {
+      redirect: {
+        destination: '/auth/signin',
+        permanent: true,
+      },
     }
   }
 }

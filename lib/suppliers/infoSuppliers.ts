@@ -9,6 +9,7 @@ export const getInfoSuppliers = (suppliers) => {
       })
 
       const information = {
+        _id: supplier._id,
         name: supplier.firstName + " " + supplier.lastName,
         acidMilk: acidMilk,
         milk: milk
