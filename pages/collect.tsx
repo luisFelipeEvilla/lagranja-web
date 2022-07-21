@@ -1,5 +1,5 @@
 import Cookies from 'cookies';
-import jsCookie from 'js-cookie'; 
+import jsCookie from 'js-cookie';
 import { useState } from 'react';
 import ModalComponent from '../components/Modal';
 
@@ -11,7 +11,7 @@ export default function Collect(props) {
     const [modalMessages, setModalMessages] = useState("");
 
     const tableId = "collection-table";
-    
+
     const handleSearch = (event) => {
         const search = event.target.value.toLocaleLowerCase();
 
@@ -62,19 +62,19 @@ export default function Collect(props) {
 
         const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
-        
+
         const token = jsCookie.get('token');
         setShowModal(true);
-        
-        const response:Response = await fetch(`${API_BASE_URL}/collections`, {
+
+        const response: Response = await fetch(`${API_BASE_URL}/collections`, {
             method: 'POST',
             headers: {
                 "Authorization": "Bearer " + token,
-               "Content-Type": 'application/json'
+                "Content-Type": 'application/json'
             },
             body: JSON.stringify(products)
         })
-        
+
         if (response.status === 200) {
             setShowModal(true);
             setModalMessages("Información almacenada correctamente");
@@ -83,14 +83,14 @@ export default function Collect(props) {
             setShowModal(true);
             setModalMessages(`Error almacenado información: \n ${result.message}`)
         }
-        
-    }    
+
+    }
     return (
         <div className="p-6 dark">
             {
-                showModal ?  <ModalComponent message={modalMessages} showModal={showModal} setShowModal={setShowModal}/> : <p></p>
+                showModal ? <ModalComponent message={modalMessages} showModal={showModal} setShowModal={setShowModal} /> : <p></p>
             }
-           
+
             <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
                 <div className="p-4">
                     <label htmlFor="table-search" className="sr-only">Search</label>
@@ -129,9 +129,9 @@ export default function Collect(props) {
                                         </select>
                                     </td>
                                     <td className="px-6 py-4">
-                                        <input onChange={event => handleChangeQuantity(event, supplier)} 
-                                        className=" appearance-none block bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                                         id="grid-quantity" type="number" placeholder="Litros de leche" defaultValue={0}/>
+                                        <input onChange={event => handleChangeQuantity(event, supplier)}
+                                            className=" appearance-none block bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                                            id="grid-quantity" type="number" placeholder="Litros de leche" defaultValue={0} />
                                     </td>
                                 </tr>
                             ))
@@ -166,13 +166,20 @@ export async function getServerSideProps({ req, res }) {
     const cookies = new Cookies(req, res);
 
     const token = cookies.get('token');
-    const response = await fetch(`${API_BASE_URL}/suppliers`, {
-        headers: {
-            Authorization: "Bearer " + token
-        }
-    })
 
-    const suppliers = await response.json();
+    let suppliers = [];
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/suppliers`, {
+            headers: {
+                Authorization: "Bearer " + token
+            }
+        });
+
+        suppliers = await response.json();
+    } catch (error) {
+        console.log(error);
+    }
 
     return {
         props: {
